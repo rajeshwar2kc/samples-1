@@ -5,6 +5,9 @@
 
 trigger:
 - master
+- stage: Build
+  jobs:
+  - job: Build
 
 pool:
   name:  hosted VS2017
@@ -36,3 +39,17 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+-stage: Deploy
+  jobs:
+  - job: Deploy
+     pool:
+     name: Hosted vs2017
+    steps:
+      - task: AzureRmWebAppDeployment@4
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Free Trial(d0bf3c95-4528-4b9e-a252-41d489c7fe27)'
+          appType: 'webApp'
+          WebAppName: 'appsql'
+          packageForLinux: '$(System.ArtifactsDirectory)/drop/*.zip'
